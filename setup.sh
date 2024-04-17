@@ -87,7 +87,8 @@ INPUT_EMAIL=${INPUT_EMAIL:-"t.me/CryptoNodeID"}
 read -p "Enter details (leave blank for default 'created using cryptonode.id helper'): " INPUT_DETAILS
 INPUT_DETAILS=${INPUT_DETAILS:-"created using cryptonode.id helper"}
 # Helper scripts
-cd ${INSTALLATION_DIR}
+mkdir -p ${INSTALLATION_DIR}/scripts
+cd ${INSTALLATION_DIR}/scripts
 rm -rf create_validator.sh unjail_validator.sh check_validator.sh start_${DAEMON_NAME}.sh stop_${DAEMON_NAME}.sh check_log.sh list_keys.sh check_balance.sh get_address.sh
 read -p "Do you want to use custom port number prefix (y/N)? " use_custom_port
 if [[ "$use_custom_port" =~ ^[Yy](es)?$ ]]; then
