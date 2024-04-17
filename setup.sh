@@ -6,7 +6,7 @@ INSTALLATION_DIR=$(dirname "$(realpath "$0")")
 CHAIN_ID='mantra-hongbai-1'
 DENOM='uom'
 SEEDS="d6016af7cb20cf1905bd61468f6a61decb3fd7c0@34.72.142.50:26656"
-PEERS="d5bd5ea9c3fab054d6cd1fee92fc3ac79827f391@mantra-testnet-peer.cryptonode.id:23656,1a46b1db53d1ff3dbec56ec93269f6a0d15faeb4@mantra-testnet-peer.itrocket.net:22656,f8352e2f7d9e6f71a431a77cefe9a84bcab3bbac@testnet-mantra-konsortech.xyz:32656,d2d67040b3bdbe7378210a51edf6a17fce405243@23.88.5.169:32656,da061f404690c5b6b19dd85d40fefde1fecf406c@34.68.19.19:26656,20db08acbcac9b7114839e63539da2802b848982@34.72.148.3:26656"
+PEERS="e6300da0cd93bcea978bb17a40e8f177272fea94@mantra-testnet-peer.cryptonode.id:23656,1a46b1db53d1ff3dbec56ec93269f6a0d15faeb4@mantra-testnet-peer.itrocket.net:22656,f8352e2f7d9e6f71a431a77cefe9a84bcab3bbac@testnet-mantra.konsortech.xyz:32656,d2d67040b3bdbe7378210a51edf6a17fce405243@23.88.5.169:32656,da061f404690c5b6b19dd85d40fefde1fecf406c@34.68.19.19:26656,20db08acbcac9b7114839e63539da2802b848982@34.72.148.3:26656"
 RPC="https://mantra-testnet-rpc.cryptonode.id:443"
 GOPATH=$HOME/go
 
