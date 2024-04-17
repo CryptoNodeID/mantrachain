@@ -32,19 +32,23 @@ if [ -z "$(echo "$GO_VERSION" | grep -E 'go1\.22\.0')" ]; then
 else
     echo "Go version 1.22.0 is already installed."
 fi
+mkdir -p ${INSTALLATION_DIR}/bin
 sudo apt -qy install curl git jq lz4 build-essential unzip
 rm -rf ${CHAIN_NAME}
 rm -rf ${DAEMON_HOME}
-git clone -b testnet https://github.com/0glabs/0g-evmos.git
-cd ${CHAIN_NAME}
-make install
+wget https://github.com/MANTRA-Finance/public/raw/main/mantrachain-hongbai/mantrachaind-linux-amd64.zip
+unzip mantrachaind-linux-amd64.zip
+rm -rf mantrachaind-linux-amd64.zip
+mv ${DAEMON_NAME} ${INSTALLATION_DIR}/bin
 source ~/.profile
 ${DAEMON_NAME} version
 
+sudo wget -P /usr/lib https://github.com/CosmWasm/wasmvm/releases/download/v1.3.1/libwasmvm.x86_64.so
+
 mkdir -p ${DAEMON_HOME}/cosmovisor/genesis/bin
 mkdir -p ${DAEMON_HOME}/cosmovisor/upgrades
-cp $(which ${DAEMON_NAME}) ${DAEMON_HOME}/cosmovisor/genesis/bin/
 
+cp ${INSTALLATION_DIR}/bin/${DAEMON_NAME} ${DAEMON_HOME}/cosmovisor/genesis/bin/
 sudo ln -s ${DAEMON_HOME}/cosmovisor/genesis ${DAEMON_HOME}/cosmovisor/current -f
 sudo ln -s ${DAEMON_HOME}/cosmovisor/current/bin/${DAEMON_NAME} /usr/local/bin/${DAEMON_NAME} -f
 
