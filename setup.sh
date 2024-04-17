@@ -6,9 +6,10 @@ INSTALLATION_DIR=$(dirname "$(realpath "$0")")
 CHAIN_ID='mantra-hongbai-1'
 DENOM='uom'
 SEEDS="d6016af7cb20cf1905bd61468f6a61decb3fd7c0@34.72.142.50:26656"
-PEERS="da061f404690c5b6b19dd85d40fefde1fecf406c@34.68.19.19:26656,20db08acbcac9b7114839e63539da2802b848982@34.72.148.3:26656"
-RPC="https://0gevmos-testnet-rpc.cryptonode.id:443"
+PEERS="d5bd5ea9c3fab054d6cd1fee92fc3ac79827f391@mantra-testnet-peer.cryptonode.id:23656,1a46b1db53d1ff3dbec56ec93269f6a0d15faeb4@mantra-testnet-peer.itrocket.net:22656,f8352e2f7d9e6f71a431a77cefe9a84bcab3bbac@testnet-mantra-konsortech.xyz:32656,d2d67040b3bdbe7378210a51edf6a17fce405243@23.88.5.169:32656,da061f404690c5b6b19dd85d40fefde1fecf406c@34.68.19.19:26656,20db08acbcac9b7114839e63539da2802b848982@34.72.148.3:26656"
+RPC="https://mantra-testnet-rpc.cryptonode.id:443"
 GOPATH=$HOME/go
+
 cd ${INSTALLATION_DIR}
 if ! grep -q "export GOPATH=" ~/.profile; then
     echo "export GOPATH=$HOME/go" >> ~/.profile
@@ -57,6 +58,7 @@ if [ -z "$VALIDATOR_KEY_NAME" ]; then
     echo "Error: No validator key name provided."
     exit 1
 fi
+${DAEMON_NAME} config keyring-backend file
 read -p "Do you want to recover wallet? [y/N]: " RECOVER
 RECOVER=$(echo "$RECOVER" | tr '[:upper:]' '[:lower:]')
 if [[ "$RECOVER" == "y" || "$RECOVER" == "yes" ]]; then
@@ -64,7 +66,6 @@ if [[ "$RECOVER" == "y" || "$RECOVER" == "yes" ]]; then
 else
     ${DAEMON_NAME} keys add $VALIDATOR_KEY_NAME
 fi
-${DAEMON_NAME} config keyring-backend file
 ${DAEMON_NAME} config chain-id $CHAIN_ID
 ${DAEMON_NAME} init $VALIDATOR_KEY_NAME --chain-id=$CHAIN_ID
 ${DAEMON_NAME} keys list
@@ -99,22 +100,11 @@ if [[ "$use_custom_port" =~ ^[Yy](es)?$ ]]; then
     sed -i.bak -e "s%:26658%:${port_prefix}658%g; s%:26657%:${port_prefix}657%g; s%:6060%:${port_prefix}060%g; s%:26656%:${port_prefix}656%g; s%:26660%:${port_prefix}660%g" ${DAEMON_HOME}/config/config.toml
 fi
 
-LATEST_HEIGHT=$(curl -s --max-time 3 --retry 2 --retry-connrefused $RPC/block | jq -r .result.block.header.height)
-TRUST_HEIGHT=$((LATEST_HEIGHT - 2000))
-TRUST_HASH=$(curl -s --max-time 3 --retry 2 --retry-connrefused "$RPC/block?height=$TRUST_HEIGHT" | jq -r .result.block_id.hash)
-
-if [ -n "$PEERS" ] && [ -n "$RPC" ] && [ -n "$LATEST_HEIGHT" ] && [ -n "$TRUST_HEIGHT" ] && [ -n "$TRUST_HASH" ]; then
     sed -i.bak \
-        -e "/\[statesync\]/,/^\[/{s/\(enable = \).*$/\1true/}" \
-        -e "/^rpc_servers =/ s|=.*|= \"$RPC,$RPC\"|;" \
-        -e "/^trust_height =/ s/=.*/= $TRUST_HEIGHT/;" \
-        -e "/^trust_hash =/ s/=.*/= \"$TRUST_HASH\"/" \
+        -e "/^seeds =/ s/=.*/= \"$SEEDS\"/" \
         -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" \
         ${DAEMON_HOME}/config/config.toml
-    echo -e "\nLATEST_HEIGHT: $LATEST_HEIGHT\nTRUST_HEIGHT: $TRUST_HEIGHT\nTRUST_HASH: $TRUST_HASH\nPEERS: $PEERS\n\nALL IS FINE"
-else
-    echo -e "\nError: One or more variables are empty. Please try again or change RPC\nExiting...\n"
-fi
+
 
 tee create_validator.sh > /dev/null <<EOF
 #!/bin/bash
