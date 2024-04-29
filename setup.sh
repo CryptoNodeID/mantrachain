@@ -23,6 +23,7 @@ if ! grep -q "export PATH=.*$GOPATH/bin" ~/.profile; then
     echo "export PATH=$PATH:$GOPATH/bin" >> ~/.profile
     source ~/.profile
 fi
+
 GO_VERSION=$(go version 2>/dev/null | grep -oP 'go1\.22\.0')
 if [ -z "$(echo "$GO_VERSION" | grep -E 'go1\.22\.0')" ]; then
     echo "Go is not installed or not version 1.22.0. Installing Go 1.22.0..."
@@ -33,6 +34,7 @@ if [ -z "$(echo "$GO_VERSION" | grep -E 'go1\.22\.0')" ]; then
 else
     echo "Go version 1.22.0 is already installed."
 fi
+
 mkdir -p ${INSTALLATION_DIR}/bin
 sudo apt -qy install curl git jq lz4 build-essential unzip
 rm -rf ${CHAIN_NAME}
@@ -101,10 +103,10 @@ if [[ "$use_custom_port" =~ ^[Yy](es)?$ ]]; then
     sed -i.bak -e "s%:26658%:${port_prefix}658%g; s%:26657%:${port_prefix}657%g; s%:6060%:${port_prefix}060%g; s%:26656%:${port_prefix}656%g; s%:26660%:${port_prefix}660%g" ${DAEMON_HOME}/config/config.toml
 fi
 
-    sed -i.bak \
-        -e "/^seeds =/ s/=.*/= \"$SEEDS\"/" \
-        -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" \
-        ${DAEMON_HOME}/config/config.toml
+sed -i.bak \
+    -e "/^seeds =/ s/=.*/= \"$SEEDS\"/" \
+    -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" \
+    ${DAEMON_HOME}/config/config.toml
 
 
 tee create_validator.sh > /dev/null <<EOF
@@ -158,7 +160,7 @@ echo "${DAEMON_NAME} keys list" > list_keys.sh && chmod +x list_keys.sh
 echo "${DAEMON_NAME} q bank balances $(${DAEMON_NAME} keys show $VALIDATOR_KEY_NAME -a)" > check_balance.sh && chmod +x check_balance.sh
 tee get_address.sh > /dev/null <<EOF
 #!/bin/bash
-echo "0x\$(evmosd debug addr \$(evmosd keys show ${VALIDATOR_KEY_NAME} -a) | grep hex | awk '{print $3}')"
+echo "0x\$(${DAEMON_NAME} debug addr \$(${DAEMON_NAME} keys show ${VALIDATOR_KEY_NAME} -a) | grep hex | awk '{print $3}')"
 EOF
 chmod +x get_address.sh
 
