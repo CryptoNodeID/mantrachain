@@ -88,6 +88,9 @@ read -p "Enter your email (leave blank for default 't.me/CryptoNodeID'): " INPUT
 INPUT_EMAIL=${INPUT_EMAIL:-"t.me/CryptoNodeID"}
 read -p "Enter details (leave blank for default 'created using cryptonode.id helper'): " INPUT_DETAILS
 INPUT_DETAILS=${INPUT_DETAILS:-"created using cryptonode.id helper"}
+if ! grep -q 'export WALLET='${VALIDATOR_KEY_NAME} ~/.profile; then
+    echo "export WALLET=${VALIDATOR_KEY_NAME}" >> ~/.profile
+fi
 # Helper scripts
 mkdir -p ${INSTALLATION_DIR}/scripts
 cd ${INSTALLATION_DIR}/scripts
